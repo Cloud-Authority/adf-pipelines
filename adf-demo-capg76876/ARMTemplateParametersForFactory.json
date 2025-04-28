@@ -4,6 +4,21 @@
 	"parameters": {
 		"factoryName": {
 			"value": "adf-demo-capg76876"
+		},
+		"AdvWorksDb_password": {
+			"value": ""
+		},
+		"BlobStorageProducts_connectionString": {
+			"value": ""
+		},
+		"AdvWorksDb_properties_typeProperties_server": {
+			"value": "dbserver877676576.database.windows.net"
+		},
+		"AdvWorksDb_properties_typeProperties_database": {
+			"value": "adventureworksdb"
+		},
+		"AdvWorksDb_properties_typeProperties_userName": {
+			"value": "siddhesh"
 		}
 	}
 }
