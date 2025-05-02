@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-demo-capg76876"
 		},
+		"ADLSTripData_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ADLSTripData'"
+		},
 		"AdvWorksDb_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AdvWorksDb'"
@@ -23,13 +27,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'TaxiTripDb'"
 		},
-		"ADLSTripData_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'ADLSTripData'"
-		},
 		"TripAggregateBlob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'TripAggregateBlob'"
+		},
+		"ADLSTripData_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlstripdata7866.dfs.core.windows.net/"
 		},
 		"AdvWorksDb_properties_typeProperties_server": {
 			"type": "string",
@@ -54,10 +58,6 @@
 		"TaxiTripDb_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "siddhesh"
-		},
-		"ADLSTripData_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlstripdata7866.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -93,6 +93,23 @@
 					}
 				},
 				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADLSTripData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ADLSTripData_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ADLSTripData_accountKey')]"
+					}
+				}
 			},
 			"dependsOn": []
 		},
@@ -161,23 +178,6 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('TaxiTripDb_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ADLSTripData')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('ADLSTripData_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('ADLSTripData_accountKey')]"
 					}
 				}
 			},
@@ -356,6 +356,62 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/TripAggregateCsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "TripAggregateBlob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "TripAggregations.csv",
+						"container": "tripdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/TripAggregateBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TripDataCsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSTripData",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "TripData.csv",
+						"fileSystem": "tripdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSTripData')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TripDataTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -431,62 +487,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/TaxiTripDb')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TripDataCsv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ADLSTripData",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "TripData.csv",
-						"fileSystem": "tripdata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ADLSTripData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TripAggregateCsv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "TripAggregateBlob",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "TripAggregations.csv",
-						"container": "tripdata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/TripAggregateBlob')]"
 			]
 		},
 		{
@@ -820,7 +820,7 @@
 						"     broadcast: 'auto')~> JoinTrip",
 						"JoinTrip aggregate(groupBy(payment_type),",
 						"     Average_fare = avg(toInteger(total_amount)),",
-						"          Total_trp_distance = sum(trip_distance)) ~> AggregateByPayType",
+						"          Total_trp_distance = sum(toInteger(trip_distance))) ~> AggregateByPayType",
 						"AggregateByPayType sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
@@ -832,52 +832,6 @@
 				"[concat(variables('factoryId'), '/datasets/TripDataCsv')]",
 				"[concat(variables('factoryId'), '/datasets/TripDataTable')]",
 				"[concat(variables('factoryId'), '/datasets/TripAggregateCsv')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ProductsMarkupPL')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "dfProductMarkup",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "dfProductsMarkup",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ProductStream": {},
-									"SinkBlob": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dfProductsMarkup')]"
 			]
 		},
 		{
@@ -988,6 +942,52 @@
 				"[concat(variables('factoryId'), '/datasets/TripDataTable')]",
 				"[concat(variables('factoryId'), '/datasets/TripDataCsv')]",
 				"[concat(variables('factoryId'), '/dataflows/dfTripData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ProductsMarkupPL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dfProductMarkup",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dfProductsMarkup",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ProductStream": {},
+									"SinkBlob": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dfProductsMarkup')]"
 			]
 		}
 	]
