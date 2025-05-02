@@ -14,6 +14,12 @@
 		"ProductBlobStorage_connectionString": {
 			"value": ""
 		},
+		"TaxiTripDb_password": {
+			"value": ""
+		},
+		"ADLSTripData_accountKey": {
+			"value": ""
+		},
 		"AdvWorksDb_properties_typeProperties_server": {
 			"value": "dbserver877676576.database.windows.net"
 		},
@@ -22,6 +28,18 @@
 		},
 		"AdvWorksDb_properties_typeProperties_userName": {
 			"value": "siddhesh"
+		},
+		"TaxiTripDb_properties_typeProperties_server": {
+			"value": "dbserver877676576.database.windows.net"
+		},
+		"TaxiTripDb_properties_typeProperties_database": {
+			"value": "taxi-data"
+		},
+		"TaxiTripDb_properties_typeProperties_userName": {
+			"value": "siddhesh"
+		},
+		"ADLSTripData_properties_typeProperties_url": {
+			"value": "https://adlstripdata7866.dfs.core.windows.net/"
 		},
 		"containerUri": {
 			"value": ""
