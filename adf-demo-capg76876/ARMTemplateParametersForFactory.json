@@ -23,6 +23,9 @@
 		"TripAggregateBlob_connectionString": {
 			"value": ""
 		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
 		"ADLSTripData_properties_typeProperties_url": {
 			"value": "https://adlstripdata7866.dfs.core.windows.net/"
 		},

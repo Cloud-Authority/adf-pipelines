@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'TripAggregateBlob'"
 		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
 		"ADLSTripData_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adlstripdata7866.dfs.core.windows.net/"
@@ -104,6 +108,9 @@
 					"TripAggregateBlob_connectionString": {
 						"value": "[parameters('TripAggregateBlob_connectionString')]"
 					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
 					"ADLSTripData_properties_typeProperties_url": {
 						"value": "[parameters('ADLSTripData_properties_typeProperties_url')]"
 					},
@@ -128,6 +135,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "adf-demo-capg76876_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-demo-capg76876_ArmTemplate_0')]"
+			]
 		}
 	]
 }
